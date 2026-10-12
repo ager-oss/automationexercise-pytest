@@ -2,6 +2,7 @@
 
 [![CI](https://github.com/ager-oss/automationexercise-pytest/actions/workflows/pytest.yml/badge.svg)](https://github.com/ager-oss/automationexercise-pytest/actions/workflows/pytest.yml)
 [![Python 3.11](https://img.shields.io/badge/Python-3.11-blue)](https://www.python.org/)
+[![Release](https://img.shields.io/badge/Release-v1.0.0-green)](https://github.com/ager-oss/automationexercise-pytest/releases/tag/v1.0.0)
 
 Project otomasi UI menggunakan Python, Pytest, dan Playwright untuk menguji alur autentikasi di [Automation Exercise](https://automationexercise.com).
 
@@ -59,6 +60,17 @@ pytest -q
 
 - `main` : branch stabil dan siap untuk release
 - `develop` : branch pengembangan dan validasi sebelum merge ke `main`
+
+## Changelog
+
+### v1.0.0
+
+- Setup project automation dengan Python + Playwright
+- Implementasi test login, logout, signup, delete account, dan invalid login
+- Setup CI dengan GitHub Actions
+- Setup coverage report dengan pytest-cov
+- Struktur Page Object Model untuk auth flow
+- Dokumentasi dan PR template
 
 ## Catatan
 
