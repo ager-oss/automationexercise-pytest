@@ -1,5 +1,8 @@
 # AutomationExercise Pytest
 
+[![CI](https://github.com/ager-oss/automationexercise-pytest/actions/workflows/pytest.yml/badge.svg)](https://github.com/ager-oss/automationexercise-pytest/actions/workflows/pytest.yml)
+[![Python 3.11](https://img.shields.io/badge/Python-3.11-blue)](https://www.python.org/)
+
 Project otomasi UI menggunakan Python, Pytest, dan Playwright untuk menguji alur autentikasi di [Automation Exercise](https://automationexercise.com).
 
 ## Fitur
@@ -30,6 +33,12 @@ python -m playwright install --with-deps chromium
 
 ```bash
 pytest -q
+```
+
+Untuk mengecek coverage:
+
+```bash
+pytest --cov=. --cov-report=term-missing
 ```
 
 Untuk mode lokal dengan browser terlihat:
