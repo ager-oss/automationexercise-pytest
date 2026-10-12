@@ -4,74 +4,89 @@
 [![Python 3.11](https://img.shields.io/badge/Python-3.11-blue)](https://www.python.org/)
 [![Release](https://img.shields.io/badge/Release-v1.0.0-green)](https://github.com/ager-oss/automationexercise-pytest/releases/tag/v1.0.0)
 
-Project otomasi UI menggunakan Python, Pytest, dan Playwright untuk menguji alur autentikasi di [Automation Exercise](https://automationexercise.com).
+Automation UI testing project built with Python, Pytest, and Playwright for the Automation Exercise website.
 
-## Fitur
+## Overview
 
-- Signup / register akun baru
-- Login user terdaftar
-- Logout
-- Delete account
-- Validasi status login dan account lifecycle
+This project validates the main authentication journey of the application, including:
 
-## Struktur Project
+- user registration
+- successful login
+- invalid login
+- logout
+- delete account
 
-- `conftest.py` : fixture untuk membuat sesi login baru per test
-- `pages/` : page object model untuk flow auth
-- `tests/` : test case pytest
+The implementation follows a Page Object Model (POM) structure and creates a fresh valid session for each test to avoid stale authentication state.
 
-## Persiapan
+## Tech Stack
 
-1. Buat environment virtual dan aktifkan.
-2. Install dependency:
+- Python 3.11
+- Pytest
+- Playwright
+- GitHub Actions
+- pytest-cov
+
+## Project Structure
+
+- `conftest.py` — session setup and account creation fixture
+- `pages/` — POM classes for auth actions
+- `tests/` — automated test cases
+- `.github/workflows/pytest.yml` — CI pipeline
+- `htmlcov/` — generated test coverage report
+
+## Setup
+
+Create a virtual environment and install dependencies:
 
 ```bash
+python -m venv .venv
+.venv\Scripts\activate
 pip install -r requirements.txt
-python -m playwright install --with-deps chromium
+python -m playwright install chromium
 ```
 
-## Menjalankan Test
+## Run Tests
 
 ```bash
 pytest -q
 ```
 
-Untuk mengecek coverage:
+Run with coverage:
 
 ```bash
-pytest --cov=. --cov-report=term-missing
+pytest --cov=. --cov-report=term-missing -q
 ```
 
-Untuk mode lokal dengan browser terlihat:
+Generate HTML coverage report:
 
 ```bash
-$env:PLAYWRIGHT_HEADLESS="false"
-pytest -q
+pytest --cov=. --cov-report=html -q
 ```
 
-Untuk environment CI/headless:
+## CI and Git Workflow
+
+- `main` — stable release branch
+- `develop` — working branch for updates and validation
+
+## Verified Result
+
+Current test suite status:
 
 ```bash
-$env:CI="true"
-pytest -q
+6 passed in 66.81s
 ```
-
-## Workflow Git
-
-- `main` : branch stabil dan siap untuk release
-- `develop` : branch pengembangan dan validasi sebelum merge ke `main`
 
 ## Changelog
 
 ### v1.0.0
 
-- Setup project automation dengan Python + Playwright
-- Implementasi test login, logout, signup, delete account, dan invalid login
-- Setup CI dengan GitHub Actions
-- Setup coverage report dengan pytest-cov
-- Struktur Page Object Model untuk auth flow
-- Dokumentasi dan PR template
+- Initial project setup
+- Authentication automation for registration and login flows
+- Logout and delete account scenarios
+- Invalid login validation
+- CI workflow and coverage integration
+- Documentation and PR template
 
-## Catatan
+## Notes
 
-Project ini sudah menggunakan fixture yang membuat akun baru setiap test agar tidak terjadi stale auth state.
+This project is intended to demonstrate reliable browser automation and test structure for UI validation in a real public web app.
