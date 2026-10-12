@@ -55,6 +55,11 @@ $env:CI="true"
 pytest -q
 ```
 
+## Workflow Git
+
+- `main` : branch stabil dan siap untuk release
+- `develop` : branch pengembangan dan validasi sebelum merge ke `main`
+
 ## Catatan
 
 Project ini sudah menggunakan fixture yang membuat akun baru setiap test agar tidak terjadi stale auth state.
