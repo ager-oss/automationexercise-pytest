@@ -1,3 +1,4 @@
+import os
 import random
 import time
 
@@ -36,7 +37,9 @@ def _create_new_account(page, name: str, email: str):
 @pytest.fixture(scope="function")
 def login(playwright):
     """Fixture login yang selalu membuat sesi valid baru per test."""
-    browser = playwright.chromium.launch(headless=False)
+    headless_flag = os.getenv("PLAYWRIGHT_HEADLESS", "").lower() in {"1", "true", "yes"}
+    ci_flag = os.getenv("CI", "").lower() == "true"
+    browser = playwright.chromium.launch(headless=headless_flag or ci_flag)
     context = browser.new_context()
     page = context.new_page()
 
