@@ -1,4 +1,5 @@
 # pages/auth_page.py
+import pytest
 from playwright.sync_api import Page, expect
 
 class AuthPage:
@@ -8,10 +9,22 @@ class AuthPage:
         # muncul di banner/header navigasi utama, bukan di elemen dengan id #header.
         self.logged_in_user_text = page.get_by_text("Logged in as", exact=False)
         self.delete_account_link = page.get_by_role("link", name="Delete Account")
-        
+
+    def _assert_site_available(self):
+        """Abaikan bila situs sedang down karena error eksternal."""
+        try:
+            self.page.goto("https://automationexercise.com", wait_until="domcontentloaded", timeout=30000)
+        except Exception as exc:  # pragma: no cover - dependensi eksternal
+            pytest.skip(f"AutomationExercise tidak dapat dijangkau: {exc}")
+
+        body_text = self.page.locator("body").inner_text()
+        lowered = body_text.lower()
+        if "cloudflare" in lowered or "error code 520" in lowered or "unknown error" in lowered:
+            pytest.skip("AutomationExercise sedang tidak tersedia karena Cloudflare 520.")
+
     def go_to_login(self):
         """Masuk ke halaman login/signup"""
-        self.page.goto("https://automationexercise.com")
+        self._assert_site_available()
         expect(self.page.get_by_role("link", name="Signup / Login")).to_be_visible()
         self.page.get_by_role("link", name="Signup / Login").click()
         expect(self.page.get_by_role("heading", name="Login to your account")).to_be_visible()

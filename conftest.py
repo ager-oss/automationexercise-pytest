@@ -6,9 +6,22 @@ import pytest
 from playwright.sync_api import expect
 
 
+def _assert_site_available(page):
+    """Skip test bila situs sedang mengalami error eksternal seperti Cloudflare 520."""
+    try:
+        page.goto("https://automationexercise.com", wait_until="domcontentloaded", timeout=30000)
+    except Exception as exc:  # pragma: no cover - dependensi eksternal
+        pytest.skip(f"AutomationExercise tidak dapat dijangkau: {exc}")
+
+    body_text = page.locator("body").inner_text()
+    lowered = body_text.lower()
+    if "cloudflare" in lowered or "error code 520" in lowered or "unknown error" in lowered:
+        pytest.skip("AutomationExercise sedang tidak tersedia karena Cloudflare 520.")
+
+
 def _create_new_account(page, name: str, email: str):
     """Membuat akun baru dan menunggu sampai status login valid muncul."""
-    page.goto("https://automationexercise.com")
+    _assert_site_available(page)
     expect(page.get_by_role("link", name="Signup / Login")).to_be_visible()
     page.get_by_role("link", name="Signup / Login").click()
     expect(page.get_by_role("heading", name="New User Signup!")).to_be_visible()
