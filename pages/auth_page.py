@@ -11,6 +11,8 @@ class AuthPage:
         
     def go_to_login(self):
         """Masuk ke halaman login/signup"""
+        self.page.goto("https://automationexercise.com")
+        expect(self.page.get_by_role("link", name="Signup / Login")).to_be_visible()
         self.page.get_by_role("link", name="Signup / Login").click()
         expect(self.page.get_by_role("heading", name="Login to your account")).to_be_visible()
 
@@ -21,6 +23,14 @@ class AuthPage:
         self.page.locator("form[action='/login'] input[name='password']").fill(password)
         self.page.locator("form[action='/login'] button[type='submit']").click()
         self.verify_logged_in_status()
+
+    def login_with_invalid_credentials(self, email: str, password: str):
+        """Mencoba login dengan kredensial yang salah dan memvalidasi pesan error."""
+        self.go_to_login()
+        self.page.locator("form[action='/login'] input[name='email']").fill(email)
+        self.page.locator("form[action='/login'] input[name='password']").fill(password)
+        self.page.locator("form[action='/login'] button[type='submit']").click()
+        expect(self.page.get_by_text("Your email or password is incorrect!")).to_be_visible()
 
     def logout(self):
         """Keluar dari sesi login yang sedang aktif."""
