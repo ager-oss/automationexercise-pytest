@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.venv/
+venv/
+env/
+.pytest_cache/
+
+# Playwright
+playwright/.auth/
+playwright-report/
+test-results/
+
+# Editor / OS
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.*
