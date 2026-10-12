@@ -18,6 +18,12 @@ This project validates the main authentication journey of the application, inclu
 
 The implementation follows a Page Object Model (POM) structure and creates a fresh valid session for each test to avoid stale authentication state.
 
+## How It Works
+
+Each test opens a real browser session with Playwright, navigates to the target website, interacts with the UI elements, and verifies the expected result through assertions. The project uses dedicated page objects to keep the test flow readable and reusable, while fixture-based setup ensures each scenario starts from a clean authenticated or unauthenticated state.
+
+This approach makes the suite suitable for UI regression testing, authentication validation, and behavior verification in a real web application.
+
 ## Tech Stack
 
 - Python 3.11
@@ -75,6 +81,10 @@ Current test suite status:
 ```bash
 6 passed in 66.81s
 ```
+
+## Project Status
+
+This project is currently in a stable state and is ready for use as a reference automation suite for UI testing and authentication flows. The implementation includes a robust session setup, reliable selectors, error validation, and a CI-ready configuration.
 
 ## Changelog
 
