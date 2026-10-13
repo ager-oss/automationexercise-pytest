@@ -32,15 +32,15 @@ def _assert_site_available(page):
         pytest.skip("AutomationExercise sedang tidak tersedia karena Cloudflare 520.")
 
 
-def _create_new_account(page, name: str, email: str):
+def _create_new_account(page, account_name: str, account_email: str):
     """Membuat akun baru dan menunggu sampai status login valid muncul."""
     _assert_site_available(page)
     expect(page.get_by_role("link", name="Signup / Login")).to_be_visible()
     _safe_click(page.get_by_role("link", name="Signup / Login"))
     expect(page.get_by_role("heading", name="New User Signup!")).to_be_visible()
 
-    page.get_by_role("textbox", name="Name").fill(name)
-    page.locator("form[action='/signup'] input[name='email']").fill(email)
+    page.get_by_role("textbox", name="Name").fill(account_name)
+    page.locator("form[action='/signup'] input[name='email']").fill(account_email)
     page.locator("form[action='/signup'] button[type='submit']").click()
 
     expect(page.get_by_text("Enter Account Information")).to_be_visible()
@@ -57,7 +57,7 @@ def _create_new_account(page, name: str, email: str):
     page.locator("button[data-qa='create-account']").click()
     expect(page.get_by_text("Account Created!")).to_be_visible()
     page.locator("[data-qa='continue-button']").click()
-    expect(page.get_by_text(f"Logged in as {name}")).to_be_visible()
+    expect(page.get_by_text(f"Logged in as {account_name}")).to_be_visible()
 
 
 @pytest.fixture(scope="function")
@@ -70,10 +70,10 @@ def login(playwright):
     page = context.new_page()
 
     unique_id = int(time.time())
-    dynamic_name = f"Tester Automation {random.randint(1, 100)}"
-    dynamic_email = f"user.tester{unique_id}@example.com"
+    generated_name = f"Tester Automation {random.randint(1, 100)}"
+    generated_email = f"user.tester{unique_id}@example.com"
 
-    _create_new_account(page, dynamic_name, dynamic_email)
+    _create_new_account(page, generated_name, generated_email)
 
     yield page
 

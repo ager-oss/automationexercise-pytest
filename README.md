@@ -1,28 +1,29 @@
-# AutomationExercise Pytest
+# AutomationExercise Web Testing
 
-[![CI](https://github.com/ager-oss/automationexercise-pytest/actions/workflows/pytest.yml/badge.svg)](https://github.com/ager-oss/automationexercise-pytest/actions/workflows/pytest.yml)
 [![Python 3.11](https://img.shields.io/badge/Python-3.11-blue)](https://www.python.org/)
-[![Release](https://img.shields.io/badge/Release-v1.0.0-green)](https://github.com/ager-oss/automationexercise-pytest/releases/tag/v1.0.0)
+[![Pytest](https://img.shields.io/badge/Pytest-7.x-orange)](https://pytest.org/)
+[![Playwright](https://img.shields.io/badge/Playwright-Automation-2ea44f)](https://playwright.dev/)
 
-Automation UI testing project built with Python, Pytest, and Playwright for the Automation Exercise website.
+A practical web automation project built with Python, Pytest, and Playwright to test the AutomationExercise website end-to-end.
 
 ## Overview
 
-This project validates the main authentication journey of the application, including:
+This project automates key user flows on the demo e-commerce site, including:
 
 - user registration
-- successful login
-- invalid login
+- login and invalid login
 - logout
 - delete account
+- products search
+- cart and checkout flow
+- contact us form
+- payment process
 
-The implementation follows a Page Object Model (POM) structure and creates a fresh valid session for each test to avoid stale authentication state.
+The suite uses a Page Object Model (POM) approach to keep the tests readable, reusable, and maintainable.
 
-## How It Works
+## Why this project
 
-Each test opens a real browser session with Playwright, navigates to the target website, interacts with the UI elements, and verifies the expected result through assertions. The project uses dedicated page objects to keep the test flow readable and reusable, while fixture-based setup ensures each scenario starts from a clean authenticated or unauthenticated state.
-
-This approach makes the suite suitable for UI regression testing, authentication validation, and behavior verification in a real web application.
+This repository demonstrates real browser automation for a public web application, including session handling, UI validation, and regression coverage for common user journeys. It is suitable as a portfolio project for QA automation and test engineering roles.
 
 ## Tech Stack
 
@@ -34,19 +35,37 @@ This approach makes the suite suitable for UI regression testing, authentication
 
 ## Project Structure
 
-- `conftest.py` — session setup and account creation fixture
-- `pages/` — POM classes for auth actions
-- `tests/` — automated test cases
-- `.github/workflows/pytest.yml` — CI pipeline
-- `htmlcov/` — generated test coverage report
+```text
+automationexercise-pytest/
+├── conftest.py
+├── pages/
+│   ├── auth_page.py
+│   └── auth_exercise_page.py
+├── tests/
+│   ├── test_login.py
+│   ├── test_logout.py
+│   ├── test_regis.py
+│   ├── test_invalid_login.py
+│   ├── test_delete_account.py
+│   ├── test_search_product.py
+│   ├── test_add_to_cart.py
+│   ├── test_checkout.py
+│   ├── test_payment.py
+│   ├── test_contact_us.py
+│   ├── test_products.py
+│   └── test_auth_flow.py
+├── requirements.txt
+├── REPORT_TESTING.md
+├── README.md
+├── htmlcov/
+└── .github/
+```
 
 ## Setup
 
-Create a virtual environment and install dependencies:
-
 ```bash
 python -m venv .venv
-.venv\Scripts\activate
+.\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 python -m playwright install chromium
 ```
@@ -57,46 +76,29 @@ python -m playwright install chromium
 pytest -q
 ```
 
-Run with coverage:
+With coverage:
 
 ```bash
 pytest --cov=. --cov-report=term-missing -q
 ```
 
-Generate HTML coverage report:
-
-```bash
-pytest --cov=. --cov-report=html -q
-```
-
-## CI and Git Workflow
-
-- `main` — stable release branch
-- `develop` — working branch for updates and validation
-
 ## Verified Result
 
-Current test suite status:
+The latest validated run is:
 
-```bash
-6 passed in 66.81s
+```text
+............                                                             [100%]
+12 passed in 133.71s (0:02:13)
 ```
 
-## Project Status
+## CI / Workflow
 
-This project is currently in a stable state and is ready for use as a reference automation suite for UI testing and authentication flows. The implementation includes a robust session setup, reliable selectors, error validation, and a CI-ready configuration.
-
-## Changelog
-
-### v1.0.0
-
-- Initial project setup
-- Authentication automation for registration and login flows
-- Logout and delete account scenarios
-- Invalid login validation
-- CI workflow and coverage integration
-- Documentation and PR template
+This project is structured to support continuous validation using GitHub Actions and can be extended with additional scenarios and reporting.
 
 ## Notes
 
-This project is intended to demonstrate reliable browser automation and test structure for UI validation in a real public web app.
+The test suite is intentionally designed to validate real user behavior in a live production-like website and to highlight stable automation practices for browser-based testing.
+
+## Contact
+
+For collaboration, project discussion, or QA automation opportunities, feel free to connect.
