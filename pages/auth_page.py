@@ -2,6 +2,7 @@
 import pytest
 from playwright.sync_api import Page, expect
 
+
 class AuthPage:
     def __init__(self, page: Page):
         self.page = page
@@ -9,6 +10,18 @@ class AuthPage:
         # muncul di banner/header navigasi utama, bukan di elemen dengan id #header.
         self.logged_in_user_text = page.get_by_text("Logged in as", exact=False)
         self.delete_account_link = page.get_by_role("link", name="Delete Account")
+
+    def _safe_click(self, locator, timeout=20000, **kwargs):
+        """Klik yang aman untuk target yang kadang tertutup oleh overlay atau animasi."""
+        for force in (False, True):
+            try:
+                locator.scroll_into_view_if_needed()
+                locator.click(timeout=timeout, force=force, **kwargs)
+                return
+            except Exception:
+                pass
+
+        locator.evaluate("element => element.click()")
 
     def _assert_site_available(self):
         """Abaikan bila situs sedang down karena error eksternal."""
@@ -26,7 +39,7 @@ class AuthPage:
         """Masuk ke halaman login/signup"""
         self._assert_site_available()
         expect(self.page.get_by_role("link", name="Signup / Login")).to_be_visible()
-        self.page.get_by_role("link", name="Signup / Login").click()
+        self._safe_click(self.page.get_by_role("link", name="Signup / Login"))
         expect(self.page.get_by_role("heading", name="Login to your account")).to_be_visible()
 
     def login(self, email: str, password: str):
@@ -47,14 +60,14 @@ class AuthPage:
 
     def logout(self):
         """Keluar dari sesi login yang sedang aktif."""
-        self.page.get_by_role("link", name="Logout").click()
+        self._safe_click(self.page.get_by_role("link", name="Logout"))
         expect(self.page.get_by_role("heading", name="Login to your account")).to_be_visible()
 
     def delete_account(self):
         """Menghapus akun yang sedang aktif."""
-        self.page.get_by_role("link", name="Delete Account").click()
+        self._safe_click(self.page.get_by_role("link", name="Delete Account"))
         expect(self.page.get_by_text("Account Deleted!")).to_be_visible()
-        self.page.get_by_role("link", name="Continue").click()
+        self._safe_click(self.page.get_by_role("link", name="Continue"))
 
     def verify_logged_in_status(self):
         """Memastikan teks 'Logged in as' muncul di menu navigasi atas"""

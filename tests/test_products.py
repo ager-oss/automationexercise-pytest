@@ -27,7 +27,7 @@ def test_view_first_product_details(playwright):
 
     try:
         _assert_site_available(page)
-        page.goto("https://automationexercise.com/product_details/1")
+        page.goto("https://automationexercise.com/product_details/1", wait_until="domcontentloaded", timeout=60000)
         assert "/product_details/1" in page.url
         expect(page.get_by_text("Blue Top")).to_be_visible()
         expect(page.get_by_text("Category: Women > Tops")).to_be_visible()

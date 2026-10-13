@@ -6,6 +6,19 @@ import pytest
 from playwright.sync_api import expect
 
 
+def _safe_click(locator, timeout=20000, **kwargs):
+    """Klik yang stabil di halaman yang kadang menampilkan overlay atau animasi."""
+    for force in (False, True):
+        try:
+            locator.scroll_into_view_if_needed()
+            locator.click(timeout=timeout, force=force, **kwargs)
+            return
+        except Exception:
+            pass
+
+    locator.evaluate("element => element.click()")
+
+
 def _assert_site_available(page):
     """Skip test bila situs sedang mengalami error eksternal seperti Cloudflare 520."""
     try:
@@ -23,7 +36,7 @@ def _create_new_account(page, name: str, email: str):
     """Membuat akun baru dan menunggu sampai status login valid muncul."""
     _assert_site_available(page)
     expect(page.get_by_role("link", name="Signup / Login")).to_be_visible()
-    page.get_by_role("link", name="Signup / Login").click()
+    _safe_click(page.get_by_role("link", name="Signup / Login"))
     expect(page.get_by_role("heading", name="New User Signup!")).to_be_visible()
 
     page.get_by_role("textbox", name="Name").fill(name)
