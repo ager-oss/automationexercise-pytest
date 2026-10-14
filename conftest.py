@@ -1,22 +1,55 @@
 import os
 import random
+import re
 import time
 
 import pytest
 from playwright.sync_api import expect
 
+SCREENSHOT_DIR = os.path.join(os.getcwd(), "screenshots")
 
-def _safe_click(locator, timeout=20000, **kwargs):
-    """Klik yang stabil di halaman yang kadang menampilkan overlay atau animasi."""
-    for force in (False, True):
-        try:
-            locator.scroll_into_view_if_needed()
-            locator.click(timeout=timeout, force=force, **kwargs)
-            return
-        except Exception:
-            pass
 
-    locator.evaluate("element => element.click()")
+def capture_screenshot(page, name: str, *, full_page: bool = True):
+    """Simpan screenshot halaman ke folder screenshots/ agar mudah debugging visual."""
+    os.makedirs(SCREENSHOT_DIR, exist_ok=True)
+    safe_name = re.sub(r"[^A-Za-z0-9_.-]+", "_", name).strip("_") or "screenshot"
+    file_path = os.path.join(SCREENSHOT_DIR, f"{safe_name}.png")
+    page.screenshot(path=file_path, full_page=full_page)
+    return file_path
+
+
+@pytest.hookimpl(tryfirst=True)
+def pytest_runtest_makereport(item, call):
+    """Ambil screenshot otomatis saat test gagal dan halaman masih tersedia."""
+    if call.when != "call" or call.excinfo is None:
+        return
+
+    funcargs = getattr(item, "funcargs", {}) or {}
+    page = None
+    for fixture_name in ("page", "login"):
+        page = funcargs.get(fixture_name)
+        if page is not None:
+            break
+
+    if page is None or not hasattr(page, "screenshot"):
+        return
+
+    try:
+        file_path = capture_screenshot(page, f"failed_{item.name}")
+        print(f"SCREENSHOT_TAKEN={file_path}")
+    except Exception:
+        pass
+
+
+@pytest.hookimpl(tryfirst=True)
+def pytest_sessionfinish(session, exitstatus):
+    """Generate HTML report screenshot otomatis setelah keseluruhan sesi test selesai."""
+    try:
+        from generate_screenshot_report import build_report
+
+        build_report()
+    except Exception as exc:  # pragma: no cover - pelaporan non-fatal
+        print(f"REPORT_WARNING={exc}")
 
 
 def _assert_site_available(page):
@@ -32,15 +65,15 @@ def _assert_site_available(page):
         pytest.skip("AutomationExercise sedang tidak tersedia karena Cloudflare 520.")
 
 
-def _create_new_account(page, account_name: str, account_email: str):
+def _create_new_account(page, name: str, email: str):
     """Membuat akun baru dan menunggu sampai status login valid muncul."""
     _assert_site_available(page)
     expect(page.get_by_role("link", name="Signup / Login")).to_be_visible()
-    _safe_click(page.get_by_role("link", name="Signup / Login"))
+    page.get_by_role("link", name="Signup / Login").click()
     expect(page.get_by_role("heading", name="New User Signup!")).to_be_visible()
 
-    page.get_by_role("textbox", name="Name").fill(account_name)
-    page.locator("form[action='/signup'] input[name='email']").fill(account_email)
+    page.get_by_role("textbox", name="Name").fill(name)
+    page.locator("form[action='/signup'] input[name='email']").fill(email)
     page.locator("form[action='/signup'] button[type='submit']").click()
 
     expect(page.get_by_text("Enter Account Information")).to_be_visible()
@@ -57,7 +90,7 @@ def _create_new_account(page, account_name: str, account_email: str):
     page.locator("button[data-qa='create-account']").click()
     expect(page.get_by_text("Account Created!")).to_be_visible()
     page.locator("[data-qa='continue-button']").click()
-    expect(page.get_by_text(f"Logged in as {account_name}")).to_be_visible()
+    expect(page.get_by_text(f"Logged in as {name}")).to_be_visible()
 
 
 @pytest.fixture(scope="function")
@@ -70,10 +103,10 @@ def login(playwright):
     page = context.new_page()
 
     unique_id = int(time.time())
-    generated_name = f"Tester Automation {random.randint(1, 100)}"
-    generated_email = f"user.tester{unique_id}@example.com"
+    dynamic_name = f"Tester Automation {random.randint(1, 100)}"
+    dynamic_email = f"user.tester{unique_id}@example.com"
 
-    _create_new_account(page, generated_name, generated_email)
+    _create_new_account(page, dynamic_name, dynamic_email)
 
     yield page
 

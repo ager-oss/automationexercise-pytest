@@ -3,6 +3,8 @@ import os
 import pytest
 from playwright.sync_api import expect
 
+from conftest import capture_screenshot
+
 
 def _assert_site_available(page):
     """Skip bila situs sedang mengalami error eksternal seperti Cloudflare 520."""
@@ -30,6 +32,7 @@ def test_place_order_and_payment(playwright):
         page.goto("https://automationexercise.com")
         expect(page.get_by_role("link", name="Signup / Login")).to_be_visible()
         page.get_by_role("link", name="Signup / Login").click()
+        capture_screenshot(page, "payment_01_signup_page")
 
         unique_name = "Tester Payment"
         unique_email = f"payment.{os.urandom(4).hex()}@example.com"
@@ -48,6 +51,7 @@ def test_place_order_and_payment(playwright):
         page.locator("#mobile_number").fill("081234567890")
         page.locator("button[data-qa='create-account']").click()
         page.locator("[data-qa='continue-button']").click()
+        capture_screenshot(page, "payment_02_after_account_created")
 
         page.goto("https://automationexercise.com/products", wait_until="domcontentloaded", timeout=60000)
         page.locator("a[data-product-id='1']").first.click()
@@ -71,6 +75,7 @@ def test_place_order_and_payment(playwright):
         expect(page.get_by_role("heading", name="Order Placed!")).to_be_visible()
         expect(page.get_by_text("Congratulations! Your order has been confirmed!")).to_be_visible()
         expect(page.get_by_role("link", name="Continue")).to_be_visible()
+        capture_screenshot(page, "payment_03_order_success")
         print("[SUKSES] Place order selesai dan pembayaran berhasil diproses.")
     finally:
         context.close()
