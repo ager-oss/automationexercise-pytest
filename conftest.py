@@ -7,6 +7,12 @@ import pytest
 from playwright.sync_api import expect
 
 SCREENSHOT_DIR = os.path.join(os.getcwd(), "screenshots")
+REPORTS_DIR = os.path.join(os.getcwd(), "reports")
+
+
+def pytest_configure(config):
+    """Siapkan folder laporan supaya output summary bisa ditulis tanpa error."""
+    os.makedirs(REPORTS_DIR, exist_ok=True)
 
 
 def capture_screenshot(page, name: str, *, full_page: bool = True):

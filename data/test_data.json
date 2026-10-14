@@ -1,0 +1,40 @@
+{
+  "valid_users": [
+    {
+      "name": "JSON Valid User",
+      "base_email": "user.tester",
+      "password": "Rahasia123!"
+    }
+  ],
+  "invalid_login": [
+    {
+      "email": "wrong@example.com",
+      "password": "wrongpassword"
+    },
+    {
+      "email": "wrong@example.com",
+      "password": "Rahasia123!"
+    },
+    {
+      "email": "user.tester@example.com",
+      "password": "wrongpassword"
+    }
+  ],
+  "search_terms": [
+    "Blue Top",
+    "Dress",
+    "Men Tshirt"
+  ],
+  "checkout": [
+    {
+      "first_name": "Joko",
+      "last_name": "Tester",
+      "address": "Gedung Cyber Cyber, Lantai 5",
+      "country": "United States",
+      "state": "DKI Jakarta",
+      "city": "Jakarta Barat",
+      "zipcode": "11730",
+      "mobile_number": "081234567890"
+    }
+  ]
+}

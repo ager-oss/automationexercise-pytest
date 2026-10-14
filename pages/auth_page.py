@@ -1,39 +1,16 @@
 # pages/auth_page.py
-import pytest
 from playwright.sync_api import Page, expect
 
+from pages.base_page import BasePage
 
-class AuthPage:
+
+class AuthPage(BasePage):
     def __init__(self, page: Page):
-        self.page = page
+        super().__init__(page)
         # Selector yang sesuai dengan struktur real halaman: teks 'Logged in as ...'
         # muncul di banner/header navigasi utama, bukan di elemen dengan id #header.
         self.logged_in_user_text = page.get_by_text("Logged in as", exact=False)
         self.delete_account_link = page.get_by_role("link", name="Delete Account")
-
-    def _safe_click(self, locator, timeout=20000, **kwargs):
-        """Klik yang aman untuk target yang kadang tertutup oleh overlay atau animasi."""
-        for force in (False, True):
-            try:
-                locator.scroll_into_view_if_needed()
-                locator.click(timeout=timeout, force=force, **kwargs)
-                return
-            except Exception:
-                pass
-
-        locator.evaluate("element => element.click()")
-
-    def _assert_site_available(self):
-        """Abaikan bila situs sedang down karena error eksternal."""
-        try:
-            self.page.goto("https://automationexercise.com", wait_until="domcontentloaded", timeout=30000)
-        except Exception as exc:  # pragma: no cover - dependensi eksternal
-            pytest.skip(f"AutomationExercise tidak dapat dijangkau: {exc}")
-
-        body_text = self.page.locator("body").inner_text()
-        lowered = body_text.lower()
-        if "cloudflare" in lowered or "error code 520" in lowered or "unknown error" in lowered:
-            pytest.skip("AutomationExercise sedang tidak tersedia karena Cloudflare 520.")
 
     def go_to_login(self):
         """Masuk ke halaman login/signup"""
