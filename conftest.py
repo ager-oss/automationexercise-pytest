@@ -116,5 +116,6 @@ def login(playwright):
 
     yield page
 
+
     context.close()
     browser.close()

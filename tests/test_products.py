@@ -34,5 +34,7 @@ def test_view_first_product_details(playwright):
 
         print("[SUKSES] Halaman detail produk berhasil dibuka.")
     finally:
+        
+        
         context.close()
         browser.close()
