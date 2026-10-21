@@ -76,6 +76,8 @@ python -m playwright install chromium
 pytest -q
 ```
 
+After a local test run, Pytest automatically opens both `report.html` (the standard pytest-html report) and `screenshots_report.html` (test status and screenshots) in the default browser. In CI, reports are generated without opening a browser.
+
 With coverage:
 
 ```bash

@@ -2,12 +2,15 @@ import os
 import random
 import re
 import time
+import webbrowser
+from pathlib import Path
 
 import pytest
 from playwright.sync_api import expect
 
 SCREENSHOT_DIR = os.path.join(os.getcwd(), "screenshots")
 REPORTS_DIR = os.path.join(os.getcwd(), "reports")
+SCREENSHOT_HTML_REPORT = Path(__file__).resolve().parent / "screenshots_report.html"
 
 
 def pytest_configure(config):
@@ -47,15 +50,35 @@ def pytest_runtest_makereport(item, call):
         pass
 
 
-@pytest.hookimpl(tryfirst=True)
-def pytest_sessionfinish(session, exitstatus):
-    """Generate HTML report screenshot otomatis setelah keseluruhan sesi test selesai."""
+def pytest_unconfigure(config):
+    """Generate report tambahan dan buka laporan HTML setelah pytest selesai."""
+    if hasattr(config, "workerinput"):
+        return
+
     try:
         from generate_screenshot_report import build_report
 
         build_report()
     except Exception as exc:  # pragma: no cover - pelaporan non-fatal
         print(f"REPORT_WARNING={exc}")
+
+    if os.getenv("CI", "").lower() == "true":
+        return
+
+    pytest_report = Path(config.getoption("htmlpath", default="report.html") or "report.html")
+    if not pytest_report.is_absolute():
+        pytest_report = Path.cwd() / pytest_report
+
+    for report_path in (pytest_report, SCREENSHOT_HTML_REPORT):
+        if not report_path.is_file():
+            print(f"REPORT_WARNING=HTML report not found: {report_path}")
+            continue
+
+        try:
+            if not webbrowser.open(report_path.resolve().as_uri()):
+                print(f"REPORT_WARNING=Could not open HTML report: {report_path}")
+        except OSError as exc:
+            print(f"REPORT_WARNING=Could not open HTML report: {exc}")
 
 
 def _assert_site_available(page):
